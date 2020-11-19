@@ -14,7 +14,7 @@
 
 
 struct MaterialIndex {
-    char name[16];
+    char *name;
     int code;
 };
 
@@ -31,12 +31,11 @@ const struct MaterialIndex MatCode[] = {
     {     "Ar",   7 },
     {     "He",   8 },
     {     "H2",   9 },
-    {   "H2Og",  10 },
+    {    "H2O",  10 },
     {    "CO2",  11 },
     {     "Ne",  12 },
     {      "O",  13 },
     {   "CaF2",  14 },
-    {    "H2O",  15 },
     {    "CH4",  16 },
     {     "Kr",  17 },
     {     "O3",  18 },
@@ -65,7 +64,7 @@ int OpticsMaterials_code(char *name)
 
     if(code < 0)
     {
-        printf("ERROR: Material name \"%s\" not recognized\n", name);
+        //printf("ERROR: Material name \"%s\" not recognized\n", name);
         return 99;
     }
 
@@ -108,7 +107,10 @@ char* OpticsMaterials_name(int code)
 // phase offset as function of mask thickness and lambda
 //
 //
-double OpticsMaterials_n(int material, double lambda)
+double OpticsMaterials_n(
+    int material,
+    double lambda
+)
 {
     double n;
     long i, i1, i2;
@@ -1411,7 +1413,7 @@ double OpticsMaterials_n(int material, double lambda)
         // convert to STP (0 C)
         //	LL = (n*n-1)/(n*n+2);
         //LL *= 293.15/273.15;
-        //n = sqrt((2.0*LL+1)/(1.0-LL));
+        //n = sqrt((2.0*LL+1)/(1.0-LL));              
         break;
 
 
@@ -1439,19 +1441,22 @@ double OpticsMaterials_n(int material, double lambda)
 
 
     default:
-        n = -1.0;
-        printf("Material not found\n");
+        n = 1.0;
+        //printf("Material not found\n");
         break;
     }
-
-
-    return(n);
+	
+    return n;
 }
 
 
 
 
-double OpticsMaterials_pha_lambda( int material, double z, double lambda )
+double OpticsMaterials_pha_lambda(
+    int material,
+    double z,
+    double lambda
+)
 {
     double n;
     double pha;
@@ -1460,12 +1465,14 @@ double OpticsMaterials_pha_lambda( int material, double z, double lambda )
     double nair;
     double lambdaum;
 
-    lambdaum = lambda*1.0e6;
+    lambdaum = lambda * 1.0e6;
 
-    nair = 1.0 + PressureRatio * ( (5792105.0e-8/(238.0185-1.0/(lambdaum*lambdaum))) + (167917.0e-8/(57.362-1.0/(lambdaum*lambdaum))) );
+    nair = 1.0 + PressureRatio * ((5792105.0e-8 / (238.0185 - 1.0 /
+                                   (lambdaum * lambdaum))) + (167917.0e-8 / (57.362 - 1.0 /
+                                           (lambdaum * lambdaum))));
 
     n = OpticsMaterials_n(material, lambda);
-    pha = 2.0*M_PI * (n-nair)*z / lambda;
+    pha = 2.0 * M_PI * (n - nair) * z / lambda;
 
     return (pha);
 }
