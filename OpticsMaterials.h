@@ -11,7 +11,6 @@
 #ifndef _OPTICSMATERIALS_H
 #define _OPTICSMATERIALS_H
 
-//#include "create_example_image.h"
-//#include "stream_process_loop_simple.h"
+#include "OpticsMaterials_n.h"
 
 #endif
