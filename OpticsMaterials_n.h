@@ -8,13 +8,10 @@
 
 int OpticsMaterials_code(char *name);
 
-char* OpticsMaterials_name(int code);
+char *OpticsMaterials_name(int code);
 
 double OpticsMaterials_n(int material, double lambda);
 
-double OpticsMaterials_pha_lambda( int material, double z, double lambda );
-
+double OpticsMaterials_pha_lambda(int material, double z, double lambda);
 
 #endif
-
-

@@ -2,9 +2,8 @@
  * @file    OpticsMaterials.c
  * @brief   Optics materials refractive indices and properties
  *
- * 
+ *
  */
-
 
 #define _GNU_SOURCE
 
@@ -20,12 +19,7 @@
 #define MODULE_SHORTNAME_DEFAULT "optmat"
 
 // Module short description
-#define MODULE_DESCRIPTION       "Optics materials properties"
-
-
-
-
-
+#define MODULE_DESCRIPTION "Optics materials properties"
 
 /* ================================================================== */
 /* ================================================================== */
@@ -33,10 +27,7 @@
 /* ================================================================== */
 /* ================================================================== */
 
-
 #include "CommandLineInterface/CLIcore.h"
-
-
 
 //
 // Forward declarations are required to connect CLI calls to functions
@@ -44,11 +35,6 @@
 //
 //#include "create_example_image.h"
 //#include "stream_process_loop_simple.h"
-
-
-
-
-
 
 /* ================================================================== */
 /* ================================================================== */
@@ -60,8 +46,6 @@
 // macro argument defines module name for bindings
 //
 INIT_MODULE_LIB(OpticsMaterials)
-
-
 
 /**
  * @brief Initialize module CLI
@@ -75,18 +59,10 @@ static errno_t init_module_CLI()
 
     //CLI_CMD_CONNECT("func1", "create_image_with_value");
 
-	//create_example_image_addCLIcmd();
-	//stream_process_loop_simple_addCLIcmd;
+    //create_example_image_addCLIcmd();
+    //stream_process_loop_simple_addCLIcmd;
 
     // optional: add atexit functions here
 
     return RETURN_SUCCESS;
 }
-
-
-
-
-
-
-
-
