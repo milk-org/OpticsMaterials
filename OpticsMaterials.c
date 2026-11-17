@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "CLIcore.h"
+#include "milk_runnable.h"
 #include "OpticsMaterials.h"
 #include "optmat_types.h"
 
@@ -156,10 +156,6 @@ double OPTICSMATERIALS_pha_lambda(int material, double z, double lambda)
     return 2.0 * M_PI * (n - nair) * z / lambda;
 }
 
-static errno_t init_module_CLI(void)
-{
-    init_OpticsMaterials();
-    return RETURN_SUCCESS;
-}
+static const MILK_RUNNABLE *const runnables[] = { NULL };
 
-MILK_MODULE(OpticsMaterials, init_module_CLI, NULL);
+MILK_MODULE_RUNNABLES(OpticsMaterials, NULL, runnables);

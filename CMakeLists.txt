@@ -89,9 +89,14 @@ else()
             ${MILK_SOURCE_FOUND}/src/engine
             ${MILK_SOURCE_FOUND}/src/engine/libfps
             ${MILK_SOURCE_FOUND}/src/engine/libmilkcommon
+            ${MILK_SOURCE_FOUND}/src/engine/libprocessinfo
             ${MILK_SOURCE_FOUND}/src/engine/libmilkdata
+            ${MILK_SOURCE_FOUND}/src/engine/libcomputeunit
             ${MILK_SOURCE_FOUND}/src/engine/ImageStreamIO
         )
+        if(EXISTS "${MILK_SOURCE_FOUND}/_build/config")
+            list(APPEND MILK_STANDALONE_INCLUDES "${MILK_SOURCE_FOUND}/_build/config")
+        endif()
     endif()
     if(MILK_INCLUDE_DIR)
         list(APPEND MILK_STANDALONE_INCLUDES
@@ -100,10 +105,14 @@ else()
             ${MILK_INCLUDE_DIR}/CommandLineInterface/CLIcore
             ${MILK_INCLUDE_DIR}/libmilkcommon
             ${MILK_INCLUDE_DIR}/libfps
+            ${MILK_INCLUDE_DIR}/libprocessinfo
             ${MILK_INCLUDE_DIR}/libmilkdata
+            ${MILK_INCLUDE_DIR}/libcomputeunit
             ${MILK_INCLUDE_DIR}/ImageStreamIO
         )
     endif()
+
+    target_compile_definitions(${LIBNAME} PRIVATE MILK_NO_CLI)
 
     target_include_directories(${LIBNAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -113,18 +122,34 @@ else()
         ${MILK_STANDALONE_INCLUDES}
     )
 
-    find_library(MILK_CLICORE_LIB NAMES CLIcore HINTS
+    set(MILK_LIB_NAMES
+        milkcomputeunit
+        milkdata
+        milkcommon
+    )
+    set(MILK_SEARCH_HINTS
         ${MILK_ROOT}/lib
         $ENV{MILK_ROOT}/lib
+        ${CMAKE_INSTALL_PREFIX}/lib
         /usr/local/milk/lib
-        ${MILK_SOURCE_FOUND}/_build/src/cli/CLIcore
+        /usr/local/lib
     )
-    if(NOT MILK_CLICORE_LIB)
-        set(MILK_CLICORE_LIB CLIcore)
+    if(MILK_SOURCE_FOUND)
+        list(APPEND MILK_SEARCH_HINTS ${MILK_SOURCE_FOUND}/_build/lib)
     endif()
 
+    set(MILK_LIBRARIES "")
+    foreach(lib ${MILK_LIB_NAMES})
+        find_library(MILK_${lib}_LIB NAMES ${lib} HINTS ${MILK_SEARCH_HINTS})
+        if(MILK_${lib}_LIB)
+            list(APPEND MILK_LIBRARIES ${MILK_${lib}_LIB})
+        else()
+            list(APPEND MILK_LIBRARIES ${lib})
+        endif()
+    endforeach()
+
     target_link_libraries(${LIBNAME} PUBLIC
-        ${MILK_CLICORE_LIB}
+        ${MILK_LIBRARIES}
         m
     )
 endif()
@@ -132,3 +157,10 @@ endif()
 install(TARGETS ${LIBNAME} EXPORT milkTargets DESTINATION lib)
 install(FILES ${INCLUDEFILES} DESTINATION include/${SRCNAME})
 install(FILES ${INCLUDEFILES} DESTINATION include)
+
+install(CODE "
+    set(_milk_cli \"\${CMAKE_INSTALL_PREFIX}/bin/milk-cli\")
+    if(EXISTS \"\${_milk_cli}\")
+        execute_process(COMMAND \"\${_milk_cli}\" --catalog RESULT_VARIABLE _cat_rc)
+    endif()
+")
